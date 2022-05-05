@@ -1,4 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
-hello
+{% for problem in problems  %}
+{{ problem.pk }}
+{% endfor %}
 {% endblock content %}

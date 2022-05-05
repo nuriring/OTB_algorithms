@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'anonymouses',
     'textbooks',
 
+    'django_seed',
     'rest_framework',
     'imagekit',
 
