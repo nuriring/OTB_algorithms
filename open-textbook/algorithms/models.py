@@ -41,8 +41,8 @@ class Solution(models.Model):
         else:
             return self.created_at.date
     
-    def __str__(self):
-            return self.title
+    # def __str__(self): ##Solution 모델에 title필드가 없다고 에러가 떠서 주석처리 해놓았습니다
+    #         return self.title
 
 class Comment(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='al_comments')
@@ -66,5 +66,5 @@ class Comment(models.Model):
         else:
             return self.created_at.date
     
-    def __str__(self):
-        return self.title
+    # def __str__(self): ##Solution 모델에 title필드가 없다고 에러가 떠서 주석처리 해놓았습니다
+    #         return self.title

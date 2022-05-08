@@ -1,6 +1,6 @@
 from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from algorithms.models import Problem
+from algorithms.models import Problem, Solution
 from .forms import ProblemForm
 
 # Create your views here.
@@ -47,3 +47,25 @@ def problem_update(request, problem_pk):
         'form': form,
     }
     return render(request, 'algorithms/update.html', context)
+
+
+def problem_delete(request, problem_pk):
+    problem = get_object_or_404(Problem, pk=problem_pk)
+    if request.method == "POST":
+        problem.delete()
+        return redirect('algorithms:index')
+    return redirect('algorithms:detail', problem.pk)
+
+def solution_index(request, problem_pk):
+    problem = get_object_or_404(Problem, pk=problem_pk)
+    solutions = problem.solution_set.all()
+    #솔루션 마다 댓글 출력하기
+    
+    
+
+    context = {
+        'solutions' : solutions,
+        'problem' : problem,
+    }
+    return render(request, 'algorithms/solution.html', context)
+
