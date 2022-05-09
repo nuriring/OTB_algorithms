@@ -1,4 +1,39 @@
 {% extends 'base.html' %}
 {% block content %}
-hello
+<h2 class='d-inline fs-2 fw-bold'>알고리즘</h2>
+<hr>
+<table class="table my-1">
+  <thead>
+    <tr class="fs-5 text-center">
+      <th scope="col" class="col-2">번호</th>
+      <th scope="col" class="col-5">제목</th>
+      <th scope="col" class="col-2">레벨</th>
+      <th scope="col" class="col-1">좋아요</th>
+    </tr>
+  </thead>
+    {% for problem in problems  %}
+      <tr>
+        <th scope="row" class="text-center">{{ problem.pk }}</th>
+        <td>
+          <a href="{% url 'algorithms:detail' problem.pk %}" class="text-decoration-none text-black">
+            {{ problem.title }} 
+          </a>
+        </td>
+        <td class="text-center">{{ problem.level }}</td>
+        <td class="text-center">{{ problem.like_users }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<div class="d-flex justify-content-between align-items center">
+  <div class="left" style='width:400px;'>
+    <a href="{% url 'algorithms:create' %}" class='d-inline btn btn-dark d-inline'>NEW</a>
+  </div>
+  <div class="mid text-center" style='width:400px;'>
+    <p>pagenation</p>
+  </div>
+  <div class="right text-end" style='width:400px;'>
+    <p>검색기능</p>
+  </div>
+</div>
 {% endblock content %}
