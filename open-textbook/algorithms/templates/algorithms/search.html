@@ -21,16 +21,16 @@
       <th scope="col" class="col-1">좋아요</th>
     </tr>
   </thead>
-    {% for problem in problems  %}
+    {% for f_problem in f_problems  %}
       <tr>
-        <th scope="row" class="text-center">{{ problem.pk }}</th>
+        <th scope="row" class="text-center">{{ f_problem.pk }}</th>
         <td>
-          <a href="{% url 'algorithms:detail' problem.pk %}" class="text-decoration-none text-black">
-            {{ problem.title }} 
+          <a href="{% url 'algorithms:detail' f_problem.pk %}" class="text-decoration-none text-black">
+            {{ f_problem.title }} 
           </a>
         </td>
-        <td class="text-center">{{ problem.level }}</td>
-        <td class="text-center">{{ problem.like_users }}</td>
+        <td class="text-center">{{ f_problem.level }}</td>
+        <td class="text-center">{{ f_problem.like_users }}</td>
       </tr>
     {% endfor %}
   </tbody>
