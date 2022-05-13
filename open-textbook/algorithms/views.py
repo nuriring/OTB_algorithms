@@ -1,16 +1,18 @@
-from calendar import c
 from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from algorithms.models import Problem, Solution
 from .forms import ProblemForm, SolutionForm, CommentForm
 from django.http import JsonResponse, HttpResponse
+from django.db.models import Q
 
 # Create your views here.
 
 def problem_index(request):
     problems = Problem.objects.order_by('-pk')
+    levels = ['브', '실', '골', '플']
     context = {
         'problems' : problems,
+        'levels' : levels,
     }
     return render(request, 'algorithms/problem_index.html', context)
 
@@ -27,6 +29,19 @@ def problem_create(request):
         'form':form,
     }
     return render(request, 'algorithms/problem_create.html', context)
+
+def problem_search(request):
+    problems = Problem.objects.all()
+    f_levels = request.GET.getlist('f')
+    if f_levels: #filtered level이 존재한다면
+        query = Q()
+        for f_level in f_levels:
+            query = query | Q(level__icontains=f_level)
+            f_problems = problems.filter(query).order_by('-pk')
+    context = {
+        'f_problems' : f_problems
+    }
+    return render(request, 'algorithms/problem_search.html', context)
 
 def problem_detail(request, problem_pk):
     problem = get_object_or_404(Problem, pk=problem_pk)
