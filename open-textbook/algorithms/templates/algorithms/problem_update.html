@@ -8,10 +8,10 @@
   {{ form.as_p }}
   <div class="d-flex justify-content-start">
     <div class="left" style='width:100px;'>
-      <input type="submit" value="CREATE" class='btn btn-dark'>
+      <input type="submit" value="SUBMIT" class='btn btn-dark'>
     </div>
     <div class="center" style='width:100px;'>
-      <a href="{% url 'algorithms:problem_index' %}" class='btn btn-dark'>BACK</a>
+      <a href="{% url 'algorithms:problem_detail' problem.pk %}" class='btn btn-dark'>BACK</a>
     </div>
   </div>
 </form>
