@@ -83,14 +83,40 @@ class ProblemForm(forms.ModelForm):
 
 
 class SolutionForm(forms.ModelForm):
-
+    hint = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                'class':'form-control',
+                'placeholder': '힌트',
+                
+                }
+            ),
+        )  
+    code = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                'class':'form-control',
+                'placeholder': '코드',
+                
+                }
+            ),
+        )  
+    description = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                'class':'form-control',
+                'placeholder': '설명',
+                
+                }
+            ),
+        )  
     class Meta:
         model = Solution
-        exclude = ('user', 'like_users',)
+        exclude = ('problem', 'user', 'like_users',)
 
 
 class CommentForm(forms.ModelForm):
 
     class Meta:
         model = Comment
-        exclude = ('user', 'like_users',)
+        exclude = ('solution', 'user', 'like_users',)
