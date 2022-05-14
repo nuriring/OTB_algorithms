@@ -1,5 +1,5 @@
 from django import forms
-from .models import Problem, Solution, Comment
+from .models import Problem, Solution, Comment, TestCase
 
 class ProblemForm(forms.ModelForm):
     LEVEL = [
@@ -28,7 +28,7 @@ class ProblemForm(forms.ModelForm):
             ),
         )
     content = forms.CharField(
-        widget=forms.TextInput(
+        widget=forms.Textarea(
             attrs={
                 'class':'form-control',
                 'placeholder': '내용',
@@ -37,28 +37,27 @@ class ProblemForm(forms.ModelForm):
             ),
         )
     input = forms.CharField(
-        widget=forms.TextInput(
+        widget=forms.Textarea(
             attrs={
                 'class':'form-control',
-                'placeholder': '입력',
-
+                'placeholder': 'input',
+                'style' : 'height: 80px',
                 }
             ),
-        ) 
+        )  
     output = forms.CharField(
-        widget=forms.TextInput(
+        widget=forms.Textarea(
             attrs={
                 'class':'form-control',
-                'placeholder': '출력',
-
+                'placeholder': 'output',
+                'style' : 'height: 80px',
                 }
             ),
-        )     
-    constraint = forms.CharField(
-        widget=forms.TextInput(
+        )    
+    problem_number = forms.IntegerField(
+        widget=forms.NumberInput(
             attrs={
                 'class':'form-control',
-                'placeholder': '제한사항',
 
                 }
             ),
@@ -100,11 +99,11 @@ class SolutionForm(forms.ModelForm):
             ),
         )  
     code = forms.CharField(
-        widget=forms.TextInput(
+        widget=forms.Textarea(
             attrs={
                 'class':'form-control',
-                'placeholder': '코드',
-                
+                'placeholder': 'output',
+                'style' : 'height: 200px',
                 }
             ),
         )  
@@ -127,3 +126,28 @@ class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
         exclude = ('solution', 'user', 'like_users',)
+
+class TestCaseForm(forms.ModelForm):
+
+    input = forms.CharField(
+        widget=forms.Textarea(
+            attrs={
+                'class':'form-control',
+                'placeholder': 'input',
+                'style' : 'height: 80px',
+                }
+            ),
+        )  
+    output = forms.CharField(
+        widget=forms.Textarea(
+            attrs={
+                'class':'form-control',
+                'placeholder': 'output',
+                'style' : 'height: 80px',
+                }
+            ),
+        )  
+
+    class Meta:
+        model = TestCase
+        exclude = ('problem',)

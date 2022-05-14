@@ -6,11 +6,12 @@ from datetime import datetime, timedelta, timezone
 class Problem(models.Model):
     like_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='like_problems')
     problem_url = models.CharField(max_length=50)
+    # constraint = models.TextField()
+    problem_number = models.IntegerField()
     title = models.CharField(max_length=20)
     content = models.TextField()
     input = models.TextField()
     output = models.TextField()
-    constraint = models.TextField()
     level = models.CharField(max_length=20)
     type = models.CharField(max_length=20)
 
@@ -68,3 +69,24 @@ class Comment(models.Model):
     
     # def __str__(self): ##Solution 모델에 title필드가 없다고 에러가 떠서 주석처리 해놓았습니다
     #         return self.title
+
+class TestCase (models.Model):
+    problem = models.ForeignKey(Problem, on_delete=models.CASCADE)
+    input = models.TextField()
+    output = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    @property
+    def created_string(self):
+        time = datetime.now(tz=timezone.utc) - self.created_at
+        if time < timedelta(minutes=1):
+            return '방금 전'
+        elif time < timedelta(hours=1):
+            return str(int(time.seconds / 60)) + '분 전'
+        elif time < timedelta(days=1):
+            return str(int(time.seconds / 3600)) + '시간 전'
+        elif time < timedelta(days=7):
+            time = datetime.now(tz=timezone.utc).date() - self.registered_date.date()
+            return str(time.days) + '일 전'
+        else:
+            return self.created_at.date

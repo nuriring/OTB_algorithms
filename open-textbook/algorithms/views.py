@@ -1,7 +1,7 @@
 from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from algorithms.models import Problem, Solution
-from .forms import ProblemForm, SolutionForm, CommentForm
+from algorithms.models import Problem, Solution, TestCase
+from .forms import ProblemForm, SolutionForm, CommentForm, TestCaseForm
 from django.http import JsonResponse, HttpResponse
 from django.db.models import Q
 from django.core.paginator import Paginator
@@ -9,22 +9,22 @@ from django.core.paginator import Paginator
 # Create your views here.
 
 def problem_index(request):
-    problems = Problem.objects.order_by('-pk')
+    problems = Problem.objects.order_by('-problem_number')
 
     f_levels = request.GET.get('level')
     if f_levels != '전부' and f_levels: #filtered level이 존재한다면
         query = Q()
         for f_level in f_levels:
             query = query | Q(level__icontains=f_level)
-            problems = problems.filter(query).order_by('-pk')
+            problems = problems.filter(query).order_by('-problem_number')
     else:
         f_levels = '전부'
 
     f_nums = request.GET.get('num') if request.GET.get('num') else ''
     if f_nums.isdigit():
         query = Q()
-        query = query | Q(pk__icontains=f_nums)
-        problems = problems.filter(query).order_by('-pk')
+        query = query | Q(problem_number__icontains=f_nums)
+        problems = problems.filter(query).order_by('-problem_number')
 
     paginator = Paginator(problems, 20) # 20은 한 페이지에 보일 글 수
 
@@ -128,7 +128,7 @@ def solution_create(request, problem_pk):
             solution.user = request.user
             solution.problem = problem
             solution.save()
-        return redirect('algorithms:solution_index', problem.pk)
+            return redirect('algorithms:solution_index', problem.pk)
     else:
         form = SolutionForm()
     context = {
@@ -193,3 +193,45 @@ def solution_like(request, problem_pk, solution_pk):
         }
         return JsonResponse(context)
     return HttpResponse(status=401)
+
+def testcase_index(request, problem_pk):
+    problem = get_object_or_404(Problem, pk=problem_pk)
+    testcases = problem.testcase_set.all()
+    context = {
+        'testcases': testcases,
+        'problem': problem
+    }
+    return render(request, 'algorithms/testcase_index.html', context)
+
+def testcase_create(request, problem_pk):
+    problem = get_object_or_404(Problem, pk=problem_pk)
+    if request.method == 'POST':
+        form = TestCaseForm(request.POST)
+        if form.is_valid():
+            form = form.save(commit=False)
+            form.problem = problem
+            form.save()
+            return redirect('algorithms:testcase_index', problem.pk)
+    else:
+        form = TestCaseForm()
+    context = {
+        'problem': problem,
+        'form': form
+    }
+    return render(request, 'algorithms/testcase_create.html', context)
+
+def testcase_update(request, problem_pk, testcase_pk):
+    problem = get_object_or_404(Problem, pk=problem_pk)
+    testcase = get_object_or_404(TestCase, pk=testcase_pk)
+    if request.method == 'POST':
+        form = TestCaseForm(request.POST, instance=testcase)
+        if form.is_valid():
+            form.save()
+            return redirect('algorithms:testcase_index', problem.pk)
+    else:
+        form = TestCaseForm(instance=testcase)
+    context = {
+        'problem': problem,
+        'form': form
+    }
+    return render(request, 'algorithms/testcase_update.html', context)    
