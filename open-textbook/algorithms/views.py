@@ -4,15 +4,62 @@ from algorithms.models import Problem, Solution
 from .forms import ProblemForm, SolutionForm, CommentForm
 from django.http import JsonResponse, HttpResponse
 from django.db.models import Q
+from django.core.paginator import Paginator
 
 # Create your views here.
 
 def problem_index(request):
     problems = Problem.objects.order_by('-pk')
-    levels = ['브', '실', '골', '플']
+
+    f_levels = request.GET.get('level')
+    if f_levels != '전부' and f_levels: #filtered level이 존재한다면
+        query = Q()
+        for f_level in f_levels:
+            query = query | Q(level__icontains=f_level)
+            problems = problems.filter(query).order_by('-pk')
+    else:
+        f_levels = '전부'
+
+    f_nums = request.GET.get('num') if request.GET.get('num') else ''
+    if f_nums.isdigit():
+        query = Q()
+        query = query | Q(pk__icontains=f_nums)
+        problems = problems.filter(query).order_by('-pk')
+
+    paginator = Paginator(problems, 20) # 20은 한 페이지에 보일 글 수
+
+    page_number = request.GET.get('page') # 현재 페이지 넘버
+    page_obj = paginator.get_page(page_number)
+
+    page_numbers_range = 10
+    max_index = len(paginator.page_range) # 총 페이지 수
+    current_page = int(page_number) if page_number else 1 # 페이지 넘버가 0일때(초기화면) 1로 바꿔줌
+
+    previous_page = 0 
+    if current_page > 10: # 만약 현재 페이지가 11 이상일 때 전으로 가는 버튼 활성화 
+        previous_page = ((current_page - 1) // page_numbers_range) * page_numbers_range # 그 버튼 누르면 가는 페이지(11~20은 10으로 감) 
+
+    next_page = 0
+    if max_index > 10 and ((current_page - 1) // page_numbers_range) != ((max_index - 1) // page_numbers_range): # 총 페이지 수가 10 이상이고, 마지막 칸(27이 총 페이지 수라면 21~27)이 아닐 경우
+        next_page = ((current_page - 1) // page_numbers_range + 1) * page_numbers_range + 1 # 그 버튼 누르면 가는 페이지(1~10은 11로 감)
+
+    start_index = int((current_page - 1) / page_numbers_range) * page_numbers_range # 현재 페이지가 13이라면 11 ~ 20까지 보여주기 위한 인덱스들
+    end_index = start_index + page_numbers_range
+    if end_index >= max_index: # 11 ~ 20을 봐야 되는데 총 페이지가 16이라면 16까지로 바꿔줌
+        end_index = max_index
+    page_range = paginator.page_range[start_index:end_index] # 위에서 계산한 범위만큼 화면에 표시
+
+    levels = ['브론즈', '실버', '골드', '플레티넘']
+
     context = {
-        'problems' : problems,
+        'problems' : page_obj,
+        'page_range' : page_range,
+        'previous_page' : previous_page,
+        'next_page' : next_page,
+        'current_page' : current_page,
         'levels' : levels,
+        'current_level' : f_levels,
+        'search_num' : f_nums
     }
     return render(request, 'algorithms/problem_index.html', context)
 
@@ -30,18 +77,7 @@ def problem_create(request):
     }
     return render(request, 'algorithms/problem_create.html', context)
 
-def problem_search(request):
-    problems = Problem.objects.all()
-    f_levels = request.GET.getlist('f')
-    if f_levels: #filtered level이 존재한다면
-        query = Q()
-        for f_level in f_levels:
-            query = query | Q(level__icontains=f_level)
-            f_problems = problems.filter(query).order_by('-pk')
-    context = {
-        'f_problems' : f_problems
-    }
-    return render(request, 'algorithms/problem_search.html', context)
+
 
 def problem_detail(request, problem_pk):
     problem = get_object_or_404(Problem, pk=problem_pk)

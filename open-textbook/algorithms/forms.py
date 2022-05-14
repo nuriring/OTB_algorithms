@@ -2,6 +2,13 @@ from django import forms
 from .models import Problem, Solution, Comment
 
 class ProblemForm(forms.ModelForm):
+    LEVEL = [
+        ('브론즈', '브론즈'), 
+        ('실버', '실버'),
+        ('골드', '골드'), 
+        ('플레티넘', '플레티넘')
+        ]
+
     title = forms.CharField(
         widget=forms.TextInput(
             attrs={
@@ -58,14 +65,14 @@ class ProblemForm(forms.ModelForm):
         )     
  
     level = forms.CharField(
-        widget=forms.TextInput(
+        widget=forms.Select(
             attrs={
-                'class':'form-control',
-                'placeholder': '레벨',
-                
-                }
+                'class': 'form-control'
+                },
+            choices=LEVEL,
             ),
-        )   
+        )  
+
     type = forms.CharField(
         widget=forms.TextInput(
             attrs={
