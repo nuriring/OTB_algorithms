@@ -1,13 +1,14 @@
 from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from algorithms.models import Problem, Solution, TestCase
+from django.views.decorators.http import require_http_methods, require_POST, require_safe
+from algorithms.models import Problem, Solution, TestCase, Comment
 from .forms import ProblemForm, SolutionForm, CommentForm, TestCaseForm
 from django.http import JsonResponse, HttpResponse
 from django.db.models import Q
 from django.core.paginator import Paginator
 
 # Create your views here.
-
+@require_safe
 def problem_index(request):
     problems = Problem.objects.order_by('-problem_number')
 
@@ -63,7 +64,7 @@ def problem_index(request):
     }
     return render(request, 'algorithms/problem_index.html', context)
 
-
+@require_http_methods(['GET', 'POST'])
 def problem_create(request):
     if request.method == 'POST':
         form = ProblemForm(request.POST)
@@ -77,8 +78,7 @@ def problem_create(request):
     }
     return render(request, 'algorithms/problem_create.html', context)
 
-
-
+@require_safe
 def problem_detail(request, problem_pk):
     problem = get_object_or_404(Problem, pk=problem_pk)
     context = {
@@ -86,6 +86,7 @@ def problem_detail(request, problem_pk):
     }
     return render(request, 'algorithms/problem_detail.html', context)
 
+@require_http_methods(['GET', 'POST'])
 def problem_update(request, problem_pk):
     problem = get_object_or_404(Problem, pk=problem_pk)
     if request.method == 'POST':
@@ -108,6 +109,7 @@ def problem_delete(request, problem_pk):
         return redirect('algorithms:problem_index')
     return redirect('algorithms:problem_detail', problem.pk)
 
+@require_safe
 def solution_index(request, problem_pk):
     problem = get_object_or_404(Problem, pk=problem_pk)
     solutions = problem.solution_set.order_by('-like_users')
@@ -119,6 +121,8 @@ def solution_index(request, problem_pk):
     }
     return render(request, 'algorithms/solution_index.html', context)
 
+@login_required
+@require_http_methods(['GET', 'POST'])
 def solution_create(request, problem_pk):
     problem = get_object_or_404(Problem, pk=problem_pk)
     if request.method == 'POST':
@@ -137,6 +141,8 @@ def solution_create(request, problem_pk):
     }
     return render(request, 'algorithms/solution_create.html', context)
 
+@login_required
+@require_http_methods(['GET', 'POST'])
 def solution_update(request, problem_pk, solution_pk):
     problem = get_object_or_404(Problem, pk=problem_pk)
     solution = get_object_or_404(Solution, pk=solution_pk)
@@ -156,6 +162,7 @@ def solution_update(request, problem_pk, solution_pk):
     }
     return render(request, 'algorithms/solution_update.html', context)
 
+@require_POST
 def solution_delete(request, problem_pk, solution_pk):
     problem = get_object_or_404(Problem, pk=problem_pk)
     solution = get_object_or_404(Solution, pk=solution_pk)
@@ -164,6 +171,7 @@ def solution_delete(request, problem_pk, solution_pk):
             solution.delete()
     return redirect('algorithms:solution_index', problem.pk)
 
+@require_POST
 def solution_comment(request, problem_pk, solution_pk):
     if request.user.is_authenticated:
         problem = get_object_or_404(Problem, pk=problem_pk)
@@ -177,6 +185,14 @@ def solution_comment(request, problem_pk, solution_pk):
         return redirect('algorithms:solution_index', problem.pk)
     return redirect('accounts:signin')
 
+def solution_comment_delete(request, problem_pk, comment_pk):
+    if request.user.is_authenticated:
+        comment = get_object_or_404(Comment, pk=comment_pk)
+        if request.user == comment.user:
+            comment.delete()
+    return redirect('algorithms:solution_index', problem_pk)
+
+@require_POST
 def solution_like(request, problem_pk, solution_pk):
     if request.user.is_authenticated:
         problem = get_object_or_404(Problem, pk=problem_pk)
@@ -194,6 +210,7 @@ def solution_like(request, problem_pk, solution_pk):
         return JsonResponse(context)
     return HttpResponse(status=401)
 
+@require_safe
 def testcase_index(request, problem_pk):
     problem = get_object_or_404(Problem, pk=problem_pk)
     testcases = problem.testcase_set.all()
@@ -203,6 +220,7 @@ def testcase_index(request, problem_pk):
     }
     return render(request, 'algorithms/testcase_index.html', context)
 
+@require_http_methods(['GET', 'POST'])
 def testcase_create(request, problem_pk):
     problem = get_object_or_404(Problem, pk=problem_pk)
     if request.method == 'POST':
@@ -220,6 +238,7 @@ def testcase_create(request, problem_pk):
     }
     return render(request, 'algorithms/testcase_create.html', context)
 
+@require_http_methods(['GET', 'POST'])
 def testcase_update(request, problem_pk, testcase_pk):
     problem = get_object_or_404(Problem, pk=problem_pk)
     testcase = get_object_or_404(TestCase, pk=testcase_pk)

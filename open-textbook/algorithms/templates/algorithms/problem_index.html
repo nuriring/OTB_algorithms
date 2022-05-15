@@ -1,7 +1,12 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2 class='d-inline fs-2 fw-bold'>알고리즘</h2>
-<hr>
+<div>
+  <a href="{% url 'algorithms:problem_index' %}" class="text-decoration-none">
+    <h2 class='d-inline fs-2 fw-bold text-black'>알고리즘</h2>
+  </a>
+  <hr>
+</div>
+
 <div class="row flex-nowrap">
   <div class="sidebar col-2">
     <table class="table my-1">
@@ -68,7 +73,10 @@
             <td>
               <a href="{% url 'algorithms:problem_detail' problem.pk %}" class="text-decoration-none text-black">
                 <div>
-                  {{ problem.title }} 
+                  {{ problem.title }}
+                  {% if problem.solution_set.all|length %}
+                  <span style='font-size:12px;'>[{{ problem.solution_set.all|length }}]</span>
+                  {% endif %}
                 </div>
               </a>
             </td>

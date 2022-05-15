@@ -1,6 +1,13 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<div>
+  <a href="{% url 'algorithms:problem_index' %}" class="text-decoration-none">
+    <h2 class='d-inline fs-2 fw-bold text-black'>알고리즘</h2>
+  </a>
+  <hr>
+</div>
+
 <h2 class='d-inline fs-2 fw-bold'>CREATE</h2>
 <hr>
 <form action="" method='POST'>

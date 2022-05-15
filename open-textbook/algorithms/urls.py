@@ -15,6 +15,7 @@ urlpatterns = [
     path('<int:problem_pk>/solution/<int:solution_pk>/update/', views.solution_update, name='solution_update'),
     path('<int:problem_pk>/solution/<int:solution_pk>/delete/', views.solution_delete, name='solution_delete'),
     path('<int:problem_pk>/solution/<int:solution_pk>/comments/', views.solution_comment, name='solution_comment'),
+    path('<int:problem_pk>/solution/comments/<int:comment_pk>/delete/', views.solution_comment_delete, name='solution_comment_delete'),
     path('<int:problem_pk>/solution/<int:solution_pk>/likes/', views.solution_like, name='solution_like'),
     # 테스트케이스
     path('<int:problem_pk>/testcase/', views.testcase_index, name='testcase_index'),

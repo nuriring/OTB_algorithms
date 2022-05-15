@@ -1,16 +1,34 @@
 {% extends 'base.html' %}
 
 {% block content %}
+
+<div>
+  <a href="{% url 'algorithms:problem_index' %}" class="text-decoration-none">
+    <h2 class='d-inline fs-2 fw-bold text-black'>알고리즘</h2>
+  </a>
+  <hr>
+</div>
+
 <ul class="nav nav-tabs my-3 fs-6 fw-bold">
   <div class="collapse navbar-collapse d-flex justify-content-evenly">
     <li class="nav-item">
       <a class="nav-link" aria-current="page" href="{% url 'algorithms:problem_detail' problem.pk %}">문제</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" href="{% url 'algorithms:testcase_index' problem.pk %}">테스트케이스</a>
+      <a class="nav-link" href="{% url 'algorithms:testcase_index' problem.pk %}">
+        테스트케이스
+        {% if problem.testcase_set.all|length %}
+        <span style='font-size:12px;'>[{{ problem.testcase_set.all|length }}]</span>
+        {% endif %}
+      </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link active" href="{% url 'algorithms:solution_index' problem.pk %}">해답</a>
+      <a class="nav-link active" href="{% url 'algorithms:solution_index' problem.pk %}">
+        해답
+        {% if problem.solution_set.all|length %}
+        <span style='font-size:12px;'>[{{ problem.solution_set.all|length }}]</span>
+        {% endif %}
+      </a>
     </li>
   </div>
 </ul>
@@ -38,7 +56,9 @@
     </div>
   </div>
   <h4 class="fw-bold">힌트</h4><hr>
-  <p>{{ solution.hint }}</p><hr>
+  <div class="border rounded px-4">
+    <pre class="my-2">{{ solution.hint }}</pre>
+  </div>
 
   <div class="accordion py-3" id="accordionFlushExample">
     <div class="accordion-item bg-light">
@@ -56,20 +76,34 @@
           </div><br>
           <h4 class="fw-bold">설명</h4><hr>
           <div class="border rounded px-4">
-            <p>{{ solution.description|linebreaks }}</p>
+            <pre class="my-2">{{ solution.description }}</pre>
           </div>
         </div>
       </div>
     </div>
   </div>
   <h4 class="fw-bold">댓글</h4><hr>
-  {% for comment in solution.comment_set.all %}
-  <p> - {{ comment.content }} <span class="text-black-50">{{ comment.user }} {{ comment.created_at }}</span></p>
-  {% endfor %}
-  <form action="{% url 'algorithms:solution_comment' problem.pk solution.pk %}" method="POST">
+  <table class="table table-borderless table-hover">
+    <tbody>
+    {% for comment in solution.comment_set.all %}
+      <tr>
+        <th class="col-1">{{ comment.user }} : </th>
+        <td class="col-6">{{ comment.content }}</td>
+        <td class="col-1">{{ comment.created_string }}</td>
+        
+        <td class="col-1">
+          {% if request.user == comment.user %}
+            <a href="{% url 'algorithms:solution_comment_delete' problem.pk comment.pk %}" class="text-black">삭제</a>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+      <form action="{% url 'algorithms:solution_comment' problem.pk solution.pk %}" method="POST">
     {% csrf_token %}
-    {{ comment_form }}
-    <input type="submit" class="btn btn-dark">
+    <input type="text" name="content" maxlength="50" class="form-control d-inline" required id="id_content" style="width: 90%;">
+    <input type="submit" class="btn btn-dark mb-1 mx-1">
   </form><br>
 </div>
 {% if request.user == solution.user %}
@@ -125,7 +159,7 @@
         })
         .catch(error => {
           if (error.response.status === 401) {
-            window.location.href = '/accounts/signin/'
+            window.location.href = '/accounts/login/'
           }
         })
     })

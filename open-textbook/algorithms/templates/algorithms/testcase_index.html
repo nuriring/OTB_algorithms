@@ -1,15 +1,32 @@
 {% extends 'base.html' %}
 {% block content %}
+<div>
+  <a href="{% url 'algorithms:problem_index' %}" class="text-decoration-none">
+    <h2 class='d-inline fs-2 fw-bold text-black'>알고리즘</h2>
+  </a>
+  <hr>
+</div>
+
 <ul class="nav nav-tabs my-3 fs-6 fw-bold">
   <div class="collapse navbar-collapse d-flex justify-content-evenly">
     <li class="nav-item">
       <a class="nav-link" aria-current="page" href="{% url 'algorithms:problem_detail' problem.pk %}">문제</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link active" href="{% url 'algorithms:testcase_index' problem.pk %}">테스트케이스</a>
+      <a class="nav-link active" href="{% url 'algorithms:testcase_index' problem.pk %}">
+        테스트케이스
+        {% if problem.testcase_set.all|length %}
+        <span style='font-size:12px;'>[{{ problem.testcase_set.all|length }}]</span>
+        {% endif %}
+      </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" href="{% url 'algorithms:solution_index' problem.pk %}">해답</a>
+      <a class="nav-link" href="{% url 'algorithms:solution_index' problem.pk %}">
+        해답
+        {% if problem.solution_set.all|length %}
+        <span style='font-size:12px;'>[{{ problem.solution_set.all|length }}]</span>
+        {% endif %}
+      </a>
     </li>
   </div>
 </ul>
@@ -25,13 +42,13 @@
   <div class="col">
     <h4 class="fw-bold">INPUT</h4>
     <div class="border rounded px-4">
-      <p>{{ testcase.input|linebreaks }}</p>
+      <pre class="my-2">{{ testcase.input }}</pre>
     </div>
   </div>
   <div class="col">
     <h4 class="fw-bold">OUTPUT</h4>
     <div class="border rounded px-4">
-      <p>{{ testcase.output|linebreaks }}</p>
+      <pre class="my-2">{{ testcase.output }}</pre>
     </div>
   </div>
 </div>
