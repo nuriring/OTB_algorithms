@@ -44,6 +44,7 @@ class ProblemForm(forms.ModelForm):
                 'style' : 'height: 80px',
                 }
             ),
+            initial='.'
         )  
     output = forms.CharField(
         widget=forms.Textarea(
@@ -53,11 +54,13 @@ class ProblemForm(forms.ModelForm):
                 'style' : 'height: 80px',
                 }
             ),
+            initial='.'
         )    
     problem_number = forms.IntegerField(
         widget=forms.NumberInput(
             attrs={
                 'class':'form-control',
+                'placeholder': '문제 번호',
 
                 }
             ),
@@ -80,6 +83,7 @@ class ProblemForm(forms.ModelForm):
                 
                 }
             ),
+            initial='비밀'
         )   
     class Meta:
         model = Problem
@@ -90,32 +94,34 @@ class ProblemForm(forms.ModelForm):
 
 class SolutionForm(forms.ModelForm):
     hint = forms.CharField(
-        widget=forms.TextInput(
+        widget=forms.Textarea(
             attrs={
                 'class':'form-control',
-                'placeholder': '힌트',
-                
+                'placeholder': '힌트를 입력해주세요.',
+                'style' : 'height: 50px',
                 }
             ),
-        )  
+            initial='힌트'
+        )
     code = forms.CharField(
         widget=forms.Textarea(
             attrs={
                 'class':'form-control',
-                'placeholder': 'output',
+                'placeholder': '코드를 입력해주세요.',
                 'style' : 'height: 200px',
                 }
             ),
         )  
     description = forms.CharField(
-        widget=forms.TextInput(
+        widget=forms.Textarea(
             attrs={
                 'class':'form-control',
-                'placeholder': '설명',
-                
+                'placeholder': '코드 설명을 입력해주세요.',
+                'style' : 'height: 100px',
                 }
             ),
-        )  
+            initial='코드 설명'
+        )
     class Meta:
         model = Solution
         exclude = ('problem', 'user', 'like_users',)

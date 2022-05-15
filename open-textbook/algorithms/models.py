@@ -10,10 +10,10 @@ class Problem(models.Model):
     problem_number = models.IntegerField()
     title = models.CharField(max_length=20)
     content = models.TextField()
-    input = models.TextField()
-    output = models.TextField()
+    input = models.TextField(default='.')
+    output = models.TextField(default='.')
     level = models.CharField(max_length=20)
-    type = models.CharField(max_length=20)
+    type = models.CharField(max_length=20, default='비밀')
 
     def __str__(self):
         return self.title
@@ -22,9 +22,9 @@ class Solution(models.Model):
     problem = models.ForeignKey(Problem, on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     like_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='like_solutions')
-    hint = models.TextField()
+    hint = models.TextField(default='.')
     code = models.TextField()
-    description = models.TextField()
+    description = models.TextField(default='.')
     created_at = models.DateTimeField(auto_now_add=True)
 
     @property
