@@ -7,10 +7,7 @@
       <a class="nav-link active" aria-current="page" href="{% url 'algorithms:problem_detail' problem.pk %}">문제</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" href="#">테스트케이스</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" href="#">질문</a>
+      <a class="nav-link" href="{% url 'algorithms:testcase_index' problem.pk %}">테스트케이스</a>
     </li>
     <li class="nav-item">
       <a class="nav-link" href="{% url 'algorithms:solution_index' problem.pk %}">해답</a>
@@ -18,21 +15,28 @@
   </div>
 </ul>
 
-<a href="{{ problem.problem_url }}" target="_blank"><h1 class="fw-bold text-decoration-none">{{ problem.title }}</h1></a> <span>{{ problem.level }}</span>
+<a href="{{ problem.problem_url }}" target="_blank" class="text-decoration-none">
+  <span class="fw-bold text-dark fs-1">{{ problem.title }}</span>
+</a><br>
+<span>{{ problem.level }}</span>
 <hr>
 <h4 class="fw-bold">문제</h4>
 <hr>
-<p>{{ problem.content }}</p>
+<div class="border rounded px-4">
+  <p>{{ problem.content|linebreaks }}</p> {# 개행문자 적용 시키기 #}
+</div> <br>
 <div class="row">
   <div class="col">
     <h4 class="fw-bold">예제 입력</h4>
-    <hr>
-    {{ problem.input }}
+    <div class="border rounded px-4">
+      <p>{{ problem.input|linebreaks }}</p>
+    </div>
   </div>
   <div class="col">
     <h4 class="fw-bold">예제 출력</h4>
-    <hr>
-    {{ problem.output }}
+    <div class="border rounded px-4">
+      <p>{{ problem.output|linebreaks }}</p>
+    </div>
   </div>
 </div>
 <hr>

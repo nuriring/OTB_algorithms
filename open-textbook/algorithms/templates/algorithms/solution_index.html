@@ -7,10 +7,7 @@
       <a class="nav-link" aria-current="page" href="{% url 'algorithms:problem_detail' problem.pk %}">문제</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" href="#">테스트케이스</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" href="#">질문</a>
+      <a class="nav-link" href="{% url 'algorithms:testcase_index' problem.pk %}">테스트케이스</a>
     </li>
     <li class="nav-item">
       <a class="nav-link active" href="{% url 'algorithms:solution_index' problem.pk %}">해답</a>
@@ -19,11 +16,15 @@
 </ul>
 
 
-<h1 class="fw-bold">{{ problem.title }}</h1> <span>{{ problem.level }}</span>
+<a href="{{ problem.problem_url }}" target="_blank" class="text-decoration-none">
+  <span class="fw-bold text-dark fs-1">{{ problem.title }}</span>
+</a><br>
+<span>{{ problem.level }}</span>
 <hr>
 {% for solution in solutions %}
 <div class="container border">
   <div class="d-flex justify-content-between py-3">
+    <p>작성자 : {{ solution.user }} | {{ solution.created_string }}</p>
     <div class="d-flex">
       <p class="py-1">좋아요 : <span id="like-count-{{ solution.pk }}">{{ solution.like_users.all|length }}</span>개</p>
       <form class="like-form px-3" data-solution-id="{{ solution.pk }}" data-problem-id="{{ problem.pk }}">
@@ -35,7 +36,6 @@
         {% endif %}
       </form>
     </div>
-    <p>작성자 : {{ solution.user }} | 작성일 : {{ solution.created_at }}</p>
   </div>
   <h4 class="fw-bold">힌트</h4><hr>
   <p>{{ solution.hint }}</p><hr>
@@ -50,9 +50,14 @@
       <div id="flush-collapse{{ solution.pk }}" class="accordion-collapse collapse" aria-labelledby="flush-heading{{ solution.pk }}" data-bs-parent="#accordionFlushExample">
         <div class="accordion-body">
           <h4 class="fw-bold">코드</h4><hr>
-          <p>{{ solution.code }}</p>
+          
+          <div class="border rounded px-4">
+            <pre class="my-2">{{ solution.code }}</pre>
+          </div><br>
           <h4 class="fw-bold">설명</h4><hr>
-          <p>{{ solution.description }}</p>
+          <div class="border rounded px-4">
+            <p>{{ solution.description|linebreaks }}</p>
+          </div>
         </div>
       </div>
     </div>
@@ -65,7 +70,7 @@
     {% csrf_token %}
     {{ comment_form }}
     <input type="submit" class="btn btn-dark">
-  </form>
+  </form><br>
 </div>
 {% if request.user == solution.user %}
   <div class="d-flex justify-content-start py-2">
